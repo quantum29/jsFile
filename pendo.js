@@ -9,7 +9,7 @@ const pendoKey = window.tsEmbed.pendoKey;
 const LOCAL_CLUSTER_ID = 'local';
 let LOADED_SCRIPTS_NUMBER = 0;
 
-export function getPendoVisitorConfig(version) {
+function getPendoVisitorConfig(version) {
     const currentDateISOString = new Date().toISOString();
     const visitorId = pendoOpts.getHostConfig()
         ? `${pendoOpts.getHostConfig().hostUserGuid}|${pendoOpts.getHostConfig().hostClusterId}`
@@ -42,7 +42,7 @@ export function getPendoVisitorConfig(version) {
     return config;
 }
 
-export function getPendoAccountConfig() {
+function getPendoAccountConfig() {
     const config = {
         id: (pendoOpts.getHostConfig() && pendoOpts.getHostConfig().hostClusterId) || pendoOpts.getClusterId(),
         name: (pendoOpts.getHostConfig() && pendoOpts.getHostConfig().hostClusterName) || pendoOpts.getClusterName(),
@@ -50,7 +50,7 @@ export function getPendoAccountConfig() {
     return config;
 }
 
-export function initializePendo() {
+function initializePendo() {
     const releaseVersion = pendoOpts.getReleaseVersion();
     window.pendo.initialize({
         apiKey: pendoKey,
@@ -77,7 +77,7 @@ function onPendoLoadError(err) {
     console.log('Unable to load Pendo', err);
 }
 
-export function isPendoAllowed(isPrintPage = false) {
+function isPendoAllowed(isPrintPage = false) {
     return true;
 }
 
@@ -87,7 +87,7 @@ export function isPendoAllowed(isPrintPage = false) {
  * already in that state, and informed us to use it as-is. It is okay to amend
  * this code with non-minimized code if desired, however.
  */
-export async function insertPendoScript() {
+async function insertPendoScript() {
     pendoOpts = window.pendoInitVariables;
     
     // defer pendo script addition by 3 seconds
