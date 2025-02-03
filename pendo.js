@@ -127,4 +127,4 @@ async function insertPendoScript() {
 }
 
 
-await insertPendoScript();
+insertPendoScript();
