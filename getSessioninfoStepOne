@@ -1,6 +1,0 @@
-// CHecking if passing getSessionInfo would work as expected here.
-
-
-console.log(window.tsEmbed)
-console.log("Inside JsInjected File #@! getSessionInfo()",window.tsEmbed.getSessionInfo());
-console.log("Inside JsInjected File #@! pendoKey",window.tsEmbed.pendoKey);
