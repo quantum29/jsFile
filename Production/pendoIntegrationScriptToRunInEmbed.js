@@ -14,9 +14,9 @@
     Inside window.tsEmbed object, we can access all the variables that 
     were passed	 in the customVariablesForThirdPartyTools in ThoughtSpot Embed init call.
 */
-const pendoKey = window.tsEmbed.pendoKey;
-const pendoVisitorConfig = window.tsEmbed.pendoVisitorConfig; // Make sure to pass atleast id and name in the customVariablesForThirdPartyTools
-const pendoAccountConfig = window.tsEmbed.pendoAccountConfig; // Make sure to pass atleast id and name in the customVariablesForThirdPartyTools
+const pendoKey = window.tsEmbed?.pendoKey;
+const pendoVisitorConfig = window.tsEmbed?.pendoVisitorConfig; // Make sure to pass atleast id and name in the customVariablesForThirdPartyTools
+const pendoAccountConfig = window?.tsEmbed?.pendoAccountConfig; // Make sure to pass atleast id and name in the customVariablesForThirdPartyTools
 
 /*
     Step 1. Define the Visitor and Account IDs
