@@ -10,8 +10,6 @@
  *  Choose IDs and metadata - https://support.pendo.io/hc/en-us/articles/21326198721563-Choose-IDs-and-metadata
  */
 
-console.log('🚀 Pendo Integration Script: Starting initialization...');
-
 /*
     Inside window.tsEmbed object, we can access all the variables that 
     were passed	 in the customVariablesForThirdPartyTools in ThoughtSpot Embed init call.
@@ -19,12 +17,6 @@ console.log('🚀 Pendo Integration Script: Starting initialization...');
 const pendoKey = window.tsEmbed?.pendoKey;
 const pendoVisitorConfig = window.tsEmbed?.pendoVisitorConfig; // Make sure to pass atleast id and name in the customVariablesForThirdPartyTools
 const pendoAccountConfig = window?.tsEmbed?.pendoAccountConfig; // Make sure to pass atleast id and name in the customVariablesForThirdPartyTools
-
-console.log('📋 Pendo Configuration Variables:');
-console.log('  - pendoKey:', pendoKey);
-console.log('  - pendoVisitorConfig:', pendoVisitorConfig);
-console.log('  - pendoAccountConfig:', pendoAccountConfig);
-console.log('  - window.tsEmbed:', window.tsEmbed);
 
 /*
     Step 1. Define the Visitor and Account IDs
@@ -39,20 +31,13 @@ console.log('  - window.tsEmbed:', window.tsEmbed);
 */
 
 function getPendoVisitorConfig() {
-    console.log('👤 getPendoVisitorConfig() called');
-    console.log('  - Input pendoVisitorConfig:', pendoVisitorConfig);
-    
     if (pendoVisitorConfig && pendoVisitorConfig.id) { // check if the visitor ID is present
-        console.log('  - ✅ Using provided visitor config:', pendoVisitorConfig);
         return pendoVisitorConfig;
     }
-    
-    const defaultConfig = {
+    return {
         id: 'guest-visitor',
         name: 'Guest Visitor',
     };
-    console.log('  - ⚠️ Using default visitor config:', defaultConfig);
-    return defaultConfig;
 }
 
 /*
@@ -61,20 +46,13 @@ function getPendoVisitorConfig() {
     Pendo Reference: https://support.pendo.io/hc/en-us/articles/21326198721563-Choose-IDs-and-metadata
 */
 function getPendoAccountConfig() {
-    console.log('🏢 getPendoAccountConfig() called');
-    console.log('  - Input pendoAccountConfig:', pendoAccountConfig);
-    
     if (pendoAccountConfig && pendoAccountConfig.id) { // check if the account ID is present
-        console.log('  - ✅ Using provided account config:', pendoAccountConfig);
         return pendoAccountConfig;
     }
-    
-    const defaultConfig = {
+    return {
         id: 'guest-account',
         name: 'Guest Account',
     };
-    console.log('  - ⚠️ Using default account config:', defaultConfig);
-    return defaultConfig;
 }
 
 /*
@@ -90,15 +68,6 @@ function getPendoAccountConfig() {
 */
 
 pendoInitScript = (apiKey) => {
-    console.log('📜 pendoInitScript() called with apiKey:', apiKey);
-    
-    if (!apiKey) {
-        console.error('❌ pendoInitScript: No API key provided!');
-        return;
-    }
-    
-    console.log('  - Creating Pendo script element...');
-    
     (function(apiKey){
         (function(p,e,n,d,o){var v,w,x,y,z;o=p[d]=p[d]||{};o._q=[];
         v=['initialize','identify','updateOptions','pageLoad','track'];
@@ -109,21 +78,15 @@ pendoInitScript = (apiKey) => {
         z=e.getElementsByTagName(n)[0];z.parentNode.insertBefore(y,z);
     })(window,document,'script','pendo');
     })(apiKey);
-    
-    console.log('  - ✅ Pendo script element created and inserted');
 }
 
 
 async function insertPendoScript() {
-    console.log('🔧 insertPendoScript() called');
-    
     // checking if pendo is already initialized
     if (window.pendo && typeof window.pendo.initialize === 'function') {
-        console.log("⚠️ Pendo is already initialized, skipping initialization");
+        console.log("Pendo is already initialized, skipping initialization");
         return;
     }
-    
-    console.log('  - Pendo not initialized, proceeding with setup...');
 
     /*
         Step 2. Install and initialize Pendo on your application
@@ -132,58 +95,32 @@ async function insertPendoScript() {
         You must also ensure that the code is included in any iframes you might have so that Pendo can properly collect feedback, track analytics, and serve guides. 
         Pendo Reference: https://support.pendo.io/hc/en-us/articles/360046272771-Developer-s-guide-to-implementing-Pendo-using-the-install-script (see step 2)
     */
-    console.log('  - Calling pendoInitScript with key:', pendoKey);
     pendoInitScript(pendoKey);
 
+
     const pendoElement = document.getElementsByTagName('script')[0];
-    console.log("  - Retrieved first script element:", pendoElement);
-    console.log("  - Script element src:", pendoElement?.src);
+    console.log("pendoElement", pendoElement)
 
     // Pendo agent code is loaded, now we can initialize Pendo
     pendoElement.onload = async () => {
-        console.log('📥 Pendo script loaded successfully');
-        
-        try {
-            console.log('  - Initializing Pendo with config...');
-            const visitorConfig = getPendoVisitorConfig();
-            const accountConfig = getPendoAccountConfig();
-            
-            console.log('  - Final initialization config:', {
-                apiKey: pendoKey,
-                visitor: visitorConfig,
-                account: accountConfig
-            });
-            
-            await window.pendo.initialize({
-                apiKey: pendoKey,
-                visitor: visitorConfig,
-                account: accountConfig,
-            });
-            
-            console.log('✅ Pendo initialized successfully');
+        await window.pendo.initialize({
+            apiKey: pendoKey,
+            visitor: getPendoVisitorConfig(),
+            account: getPendoAccountConfig(),
+        });
 
-            /*
-                Step 3. Verify the installation (Optional unless you want to verify it)
-                Verification is carried out where the code was installed and where the end-user is authenticated (unless anonymous visitors are used).
-                Pendo Reference: https://support.pendo.io/hc/en-us/articles/360046272771-Developer-s-guide-to-implementing-Pendo-using-the-install-script (see step 3)
-            */
-            console.log('  - Validating Pendo environment...');
-            await window.pendo.validateEnvironment();
-            console.log('✅ Pendo environment validation completed');
-            
-        } catch (error) {
-            console.error('❌ Error during Pendo initialization:', error);
-        }
+        /*
+            Step 3. Verify the installation (Optional unless you want to verify it)
+            Verification is carried out where the code was installed and where the end-user is authenticated (unless anonymous visitors are used).
+            Pendo Reference: https://support.pendo.io/hc/en-us/articles/360046272771-Developer-s-guide-to-implementing-Pendo-using-the-install-script (see step 3)
+        */
+        await window.pendo.validateEnvironment();
     };
 
     // If Pendo agent code is not loaded, log the error	
     pendoElement.onerror = err => {
-        console.error('❌ Unable to load Pendo script:', err);
+        console.warn('Unable to load Pendo', err);
     };
-    
-    console.log('  - Event listeners attached to script element');
 }
 
-console.log('🎯 Calling insertPendoScript()...');
 insertPendoScript();
-console.log('🏁 Pendo Integration Script: Initialization call completed');
